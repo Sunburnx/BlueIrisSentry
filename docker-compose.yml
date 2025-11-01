@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  yolo-detector:
+    build: .
+    container_name: yolo-detector
+    hostname: yolo-detector
+    restart: unless-stopped
+
+    ports:
+      - "9090:9090"  # API endpoint
+      - "9091:9091"  # Web UI
+
+    volumes:
+      - ./app:/app
+      - ./models:/app/models
+      - ./config:/app/config
+      - ./test_images:/app/test_images
+      - ./output:/app/output
+      - ./logs:/app/logs
+
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - MODEL_NAME=yolov8x-oiv7.pt
+      - CONFIDENCE_THRESHOLD=0.18
+      - DEFAULT_IMGSZ=1280
+      - DEFAULT_IOU=0.45
+      - DEFAULT_MAX_DET=300
+      - API_PORT=9090
+      - WEB_UI_PORT=9091
+      - LOG_LEVEL=INFO
+      - MAX_QUEUE_SIZE=10
+      - SAVE_DEBUG_IMAGES=false
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+    devices:
+      - /dev/nvidia0:/dev/nvidia0
+      - /dev/nvidiactl:/dev/nvidiactl
+      - /dev/nvidia-uvm:/dev/nvidia-uvm
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9090/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s

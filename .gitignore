@@ -1,0 +1,58 @@
+# Model files (large files that shouldn't be in git)
+models/
+*.pt
+*.pth
+*.onnx
+*.engine
+
+# Test images (user-specific test data)
+test_images/
+
+# Logs
+logs/
+*.log
+
+# Output files
+output/
+detections/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+
+# Docker volumes data
+config/*.json
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+tmp/
+
+# Claude AI assistant files (optional - keep CLAUDE.md for documentation)
+.claude/settings.local.json
+
+# OS files
+Thumbs.db
+.DS_Store
