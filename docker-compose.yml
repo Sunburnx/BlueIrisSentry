@@ -1,16 +1,13 @@
 version: '3.8'
-
 services:
   yolo-detector:
     build: .
     container_name: yolo-detector
     hostname: yolo-detector
     restart: unless-stopped
-
     ports:
       - "9090:9090"  # API endpoint
       - "9091:9091"  # Web UI
-
     volumes:
       - ./app:/app
       - ./models:/app/models
@@ -18,9 +15,7 @@ services:
       - ./test_images:/app/test_images
       - ./output:/app/output
       - ./logs:/app/logs
-
     environment:
-      - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
       - MODEL_NAME=yolov8x-oiv7.pt
       - CONFIDENCE_THRESHOLD=0.18
@@ -32,20 +27,28 @@ services:
       - LOG_LEVEL=INFO
       - MAX_QUEUE_SIZE=10
       - SAVE_DEBUG_IMAGES=false
-
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
-              count: all
-              capabilities: [gpu]
-
-    devices:
-      - /dev/nvidia0:/dev/nvidia0
-      - /dev/nvidiactl:/dev/nvidiactl
-      - /dev/nvidia-uvm:/dev/nvidia-uvm
-
+              # ── Select ONE card by uncommenting its device_ids line, then "docker compose up -d --force-recreate yolo-detector" ──
+              # then verify docker exec yolo-detector nvidia-smi -L
+              # RTX 5090 (32GB) — inference / yolo detection (BI)
+              device_ids: ["GPU-51d4e306-fef4-4582-cd54-645522529f65"]
+              # RTX PRO 6000 Blackwell (96GB) — training / ML pipeline
+              # device_ids: ["GPU-6c98db15-9936-dfe3-1930-e272b3618584"]
+              capabilities: [gpu, compute, utility]
+    # cgroup v2 device allowlist, pinned in the container spec (added 2026-08-10).
+    # A snapd-triggered `systemctl daemon-reload` (snap refresh, seen 09:05:09) rewrites
+    # the scope cgroup and drops the runtime hook's device rules — NVML then fails with
+    # "Unknown Error" while /dev/nvidia* is still present and the container stays healthy.
+    # Rules declared here are re-applied by Docker on any cgroup rewrite. Majors 234 and
+    # 237 are DYNAMIC — re-verify with `ls -l /dev/nvidia*` after any kernel/driver change.
+    device_cgroup_rules:
+      - 'c 195:* rmw'   # nvidia0, nvidia1, nvidiactl, nvidia-modeset
+      - 'c 234:* rmw'   # nvidia-uvm, nvidia-uvm-tools
+      - 'c 237:* rmw'   # nvidia-caps
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9090/health"]
       interval: 30s
