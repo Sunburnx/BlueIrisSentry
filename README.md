@@ -625,8 +625,8 @@ ip addr show
 
 3. **Container not listening on all interfaces**:
 ```bash
-# Check server.py has host="0.0.0.0"
-docker exec yolo-detector grep "host=" /app/server.py
+# Check yolo_detector.py has host="0.0.0.0"
+docker exec yolo-detector grep "host=" /app/yolo_detector.py
 
 # Should see: uvicorn.run(app, host="0.0.0.0", port=...)
 ```
@@ -780,7 +780,7 @@ ls -lh output/detections/
 ├── CLAUDE.md                   # Detailed implementation guide
 │
 ├── app/                        # Application source code
-│   ├── server.py               # FastAPI server (main entry point)
+│   ├── yolo_detector.py        # FastAPI server (main entry point)
 │   ├── detector.py             # YOLOv8 detection logic
 │   ├── config.py               # Configuration management
 │   ├── utils.py                # Helper functions
@@ -810,7 +810,7 @@ ls -lh output/detections/
 1. **Edit code**:
 ```bash
 cd ~/containers/yolo-detector
-nano app/server.py
+nano app/yolo_detector.py
 ```
 
 2. **Restart to apply changes**:

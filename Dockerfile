@@ -35,4 +35,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD curl -f http://localhost:9080/health || exit 1
 
 # Run server
-CMD ["python3", "server.py"]
+CMD ["python3", "yolo_detector.py"]

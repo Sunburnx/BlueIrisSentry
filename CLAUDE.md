@@ -213,7 +213,7 @@ Backpack, Suitcase, Handbag, Briefcase, Luggage, Package, Box, Weapon (note: lim
 ├── CLAUDE.md                   # This file (for Claude Code reference)
 │
 ├── app/                        # Application code (mounted as volume)
-│   ├── server.py               # FastAPI application (main entry point)
+│   ├── yolo_detector.py        # FastAPI application (main entry point)
 │   ├── detector.py             # YOLOv8 detection logic
 │   ├── config.py               # Configuration management
 │   ├── utils.py                # Helper functions
@@ -422,7 +422,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD curl -f http://localhost:9080/health || exit 1
 
 # Run server
-CMD ["python3", "server.py"]
+CMD ["python3", "yolo_detector.py"]
 ```
 
 ### docker-compose.yml
@@ -651,9 +651,9 @@ print(result)
 ### Phase 3: FastAPI Server (20 min)
 
 **Files to Create:**
-- `app/server.py` - Main API application
+- `app/yolo_detector.py` - Main API application
 
-**server.py Key Features:**
+**yolo_detector.py Key Features:**
 ```python
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.responses import HTMLResponse
@@ -1169,7 +1169,7 @@ curl http://192.168.1.3:9080/health
    ```
 
 2. **Container not listening on all interfaces:**
-   - Check server.py: `uvicorn.run(host="0.0.0.0")`
+   - Check yolo_detector.py: `uvicorn.run(host="0.0.0.0")`
    - Restart container
 
 3. **Wrong IP address:**
@@ -1345,7 +1345,7 @@ watch -n 1 'docker stats yolo-detector --no-stream'
 **Priority Tasks (Execute in Order):**
 1. Create complete directory structure
 2. Implement `detector.py` with GPU support
-3. Implement `server.py` with FastAPI
+3. Implement `yolo_detector.py` with FastAPI
 4. Create `web_ui.html` for testing
 5. Test detection with sample images
 6. Create systemd service
